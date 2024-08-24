@@ -62,6 +62,9 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Werror -Wno-error=deprecated-declarations -Wno-error=pointer-arith")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -UNDEBUG") # Enable assertion
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -UNDEBUG") # Enable assertion
+find_package(Boost 1.60.0 REQUIRED)
+include_directories(${BOOST_INCLUDE_DIRS})
+message(STATUS "Boost Include Dirs: ${Boost_INCLUDE_DIRS}")
 
 
 # Source files
@@ -74,6 +77,7 @@ endif()
 
 # Libraries
 add_library(InfiniTensor SHARED ${SRC})
+target_link_libraries(InfiniTensor ${Boost_LIBRARIES})
 
 function(build_test files)
   # Non-recursive glob for skip failed tests
@@ -81,7 +85,7 @@ function(build_test files)
   foreach(testsourcefile ${TEST_SOURCES})
     get_filename_component(testname ${testsourcefile} NAME_WE)
     add_executable(${testname} ${testsourcefile})
-    target_link_libraries(${testname} InfiniTensor GTest::gtest_main)
+    target_link_libraries(${testname} InfiniTensor GTest::gtest_main ${Boost_LIBRARIES})
     add_test(NAME ${testname} COMMAND ${testname})
   endforeach(testsourcefile ${TEST_SOURCES})
 endfunction()
